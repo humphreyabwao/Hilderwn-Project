@@ -359,11 +359,22 @@ body::-webkit-scrollbar-thumb:hover {
   inset: 0;
   background-size: cover;
   background-position: center center;
+  background-color: #0f172a;
   will-change: opacity, transform;
   image-rendering: auto;
   opacity: 0;
   transform: scale(1.08);
   transition: opacity .8s cubic-bezier(.4,0,.2,1);
+}
+
+.services__bg:not(.is-bg-loaded),
+.svc__img:not(.is-bg-loaded),
+.svc-form__bg:not(.is-bg-loaded),
+.svc-list__img:not(.is-bg-loaded),
+.sust-pillars__bg:not(.is-bg-loaded),
+.abt-values__bg:not(.is-bg-loaded),
+.abt-plant__bg:not(.is-bg-loaded) {
+  background-color: #1e293b;
 }
 
 .hero__img.is-active {
@@ -1722,7 +1733,11 @@ body::-webkit-scrollbar-thumb:hover {
   inset: 0;
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  background-attachment: scroll;
+}
+
+.page-hero__bg:not(.is-bg-loaded) {
+  background-color: #0f172a;
 }
 
 .page-hero__dim {

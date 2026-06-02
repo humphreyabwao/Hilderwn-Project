@@ -6,10 +6,12 @@
   var SOURCES = (window.HildernwLiveData && window.HildernwLiveData.SOURCES) || [];
 
   var NOTIFY_LIMIT = 20;
+  var DISMISSED_STORAGE_KEY = 'admin-notify-dismissed';
 
   var els = {
     badge: document.getElementById('admin-notify-badge'),
     newPill: document.getElementById('admin-notify-new-pill'),
+    clearBtn: document.getElementById('admin-notify-clear'),
     list: document.getElementById('admin-notify-list'),
     empty: document.getElementById('admin-notify-empty'),
     dropdown: document.getElementById('admin-notify-dropdown')
@@ -88,7 +90,32 @@
     };
   }
 
-  function mergedItems() {
+  function notifyItemId(item) {
+    return item.sourceKey + ':' + item.id;
+  }
+
+  function getDismissedSet() {
+    try {
+      var raw = localStorage.getItem(DISMISSED_STORAGE_KEY);
+      if (!raw) return {};
+      var parsed = JSON.parse(raw);
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveDismissedSet(set) {
+    try {
+      localStorage.setItem(DISMISSED_STORAGE_KEY, JSON.stringify(set));
+    } catch (e) { /* ignore quota */ }
+  }
+
+  function isDismissed(item, dismissed) {
+    return !!(dismissed || getDismissedSet())[notifyItemId(item)];
+  }
+
+  function allMergedItems() {
     var merged = [];
     SOURCES.forEach(function (source) {
       (itemsBySource[source.key] || []).forEach(function (item) {
@@ -99,6 +126,43 @@
       return b.sortTime - a.sortTime;
     });
     return merged;
+  }
+
+  function mergedItems() {
+    var dismissed = getDismissedSet();
+    return allMergedItems().filter(function (item) {
+      return !isDismissed(item, dismissed);
+    });
+  }
+
+  function pruneDismissedSet() {
+    var dismissed = getDismissedSet();
+    var liveIds = {};
+    allMergedItems().forEach(function (item) {
+      liveIds[notifyItemId(item)] = true;
+    });
+    var changed = false;
+    Object.keys(dismissed).forEach(function (key) {
+      if (!liveIds[key]) {
+        delete dismissed[key];
+        changed = true;
+      }
+    });
+    if (changed) saveDismissedSet(dismissed);
+  }
+
+  function clearNotifications() {
+    var dismissed = getDismissedSet();
+    mergedItems().forEach(function (item) {
+      dismissed[notifyItemId(item)] = true;
+    });
+    saveDismissedSet(dismissed);
+    renderList();
+  }
+
+  function updateClearButton() {
+    if (!els.clearBtn) return;
+    els.clearBtn.hidden = mergedItems().length === 0;
   }
 
   function countNew() {
@@ -131,6 +195,8 @@
         els.newPill.hidden = true;
       }
     }
+
+    updateClearButton();
   }
 
   function renderList() {
@@ -177,6 +243,7 @@
       return b.sortTime - a.sortTime;
     });
     itemsBySource[source.key] = items;
+    pruneDismissedSet();
     renderList();
   }
 
@@ -198,6 +265,13 @@
       }
       if (notifyDrop) notifyDrop.hidden = true;
     });
+
+    if (els.clearBtn) {
+      els.clearBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        clearNotifications();
+      });
+    }
 
     if (els.dropdown) {
       els.dropdown.querySelectorAll('.admin-notify__view-all').forEach(function (btn) {
@@ -222,7 +296,8 @@
 
   window.HildernwAdminNotify = {
     getNewCount: countNew,
-    refresh: renderList
+    refresh: renderList,
+    clear: clearNotifications
   };
 
   document.addEventListener('hildernw-live-data', onLiveData);

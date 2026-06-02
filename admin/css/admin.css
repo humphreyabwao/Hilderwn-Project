@@ -512,6 +512,13 @@ html.theme-instant .admin-theme-toggle__moon {
   color: var(--dark);
 }
 
+.admin-notify__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .admin-notify__new-pill {
   font-size: 11px;
   font-weight: 700;
@@ -519,6 +526,26 @@ html.theme-instant .admin-theme-toggle__moon {
   background: #e0f2fe;
   padding: 3px 8px;
   border-radius: 999px;
+}
+
+.admin-notify__clear {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--admin-text-muted);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+
+.admin-notify__clear:hover {
+  color: var(--admin-text);
+  border-color: var(--gray-3);
+  background: var(--admin-hover);
 }
 
 .admin-notify__list {
@@ -2777,6 +2804,17 @@ html[data-theme="dark"] .admin-notify__badge {
 html[data-theme="dark"] .dash-recent,
 html[data-theme="dark"] .settings__card,
 html[data-theme="dark"] .settings__tabs,
+html[data-theme="dark"] .admin-notify__clear {
+  color: var(--admin-text-muted);
+  background: var(--admin-input-bg);
+  border-color: var(--admin-border);
+}
+
+html[data-theme="dark"] .admin-notify__clear:hover {
+  color: var(--admin-text);
+  background: var(--admin-hover);
+}
+
 html[data-theme="dark"] .dash-recent-head .dash-recent__clear {
   background: var(--admin-surface);
   border-color: var(--admin-border);

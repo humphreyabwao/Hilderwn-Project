@@ -8,7 +8,20 @@ Use this before every production deploy for **Hildernw Mining**.
 firebase deploy --only firestore:rules,firestore:indexes,hosting
 ```
 
+Admin and login pages use **root-absolute** asset paths (`/admin/css/…`, `/js/…`) so CSS and JS load correctly on Firebase Hosting with `cleanUrls` (relative paths like `css/admin.css` break when the URL is `/admin` without a trailing slash).
+
 Deploy **rules and indexes before** hosting when security rules changed.
+
+### Image performance (before hosting)
+
+Photos are compressed for the web (~500–950 KB each vs multi‑MB originals). Re-run after adding new photos:
+
+```bash
+./scripts/optimize-images.sh
+firebase deploy --only hosting
+```
+
+Originals are kept in `assets/images/_originals-backup/` (not deployed). The site uses long-lived browser cache (1 year on Firebase) plus a service worker for `/assets/images/`.
 
 ## 2. Admin access (required)
 

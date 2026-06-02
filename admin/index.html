@@ -6,11 +6,11 @@
     <title>Admin — Hildernw Mining Limited</title>
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#0f172a" />
-    <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpeg" />
+    <link rel="icon" type="image/jpeg" href="/assets/images/logo.jpeg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="css/admin.css" />
+    <link rel="stylesheet" href="/admin/css/admin.css" />
     <script>
       (function () {
         var modes = ['light', 'dark', 'system'];
@@ -34,7 +34,7 @@
       <aside class="admin-sidebar" id="admin-sidebar" aria-label="Admin navigation">
 
         <div class="admin-sidebar__brand">
-          <img src="../assets/images/logo.jpeg" alt="Hildernw Mining" />
+          <img src="/assets/images/logo.jpeg" alt="Hildernw Mining" />
           <div class="admin-sidebar__brand-text">
             <strong>Hildernw</strong>
             <small>Admin</small>
@@ -119,7 +119,10 @@
               <div class="admin-notify__dropdown" id="admin-notify-dropdown" role="menu" hidden>
                 <div class="admin-notify__head">
                   <strong>Notifications</strong>
-                  <span class="admin-notify__new-pill" id="admin-notify-new-pill" hidden>0 new</span>
+                  <div class="admin-notify__head-actions">
+                    <span class="admin-notify__new-pill" id="admin-notify-new-pill" hidden>0 new</span>
+                    <button type="button" class="admin-notify__clear" id="admin-notify-clear" hidden>Clear</button>
+                  </div>
                 </div>
                 <div class="admin-notify__list" id="admin-notify-list" role="list" aria-live="polite">
                   <p class="admin-notify__loading">Loading…</p>
@@ -950,22 +953,22 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="js/admin-theme.js"></script>
-    <script src="js/admin-config.js"></script>
-    <script src="js/admin-auth.js"></script>
-    <script src="js/admin.js" defer></script>
-    <script src="js/admin-live-data.js" defer></script>
-    <script src="js/admin-dashboard.js" defer></script>
-    <script src="js/admin-notifications.js" defer></script>
-    <script src="js/admin-enquiry-module.js" defer></script>
-    <script src="js/admin-contact.js" defer></script>
-    <script src="js/admin-vat-leach.js" defer></script>
-    <script src="js/admin-equipment.js" defer></script>
-    <script src="js/admin-mining-support.js" defer></script>
-    <script src="js/admin-careers.js" defer></script>
-    <script src="js/admin-vacancies.js" defer></script>
-    <script src="js/admin-settings.js" defer></script>
+    <script src="/js/firebase.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/admin/js/admin-theme.js"></script>
+    <script src="/admin/js/admin-config.js"></script>
+    <script src="/admin/js/admin-auth.js"></script>
+    <script src="/admin/js/admin.js" defer></script>
+    <script src="/admin/js/admin-live-data.js" defer></script>
+    <script src="/admin/js/admin-dashboard.js" defer></script>
+    <script src="/admin/js/admin-notifications.js" defer></script>
+    <script src="/admin/js/admin-enquiry-module.js" defer></script>
+    <script src="/admin/js/admin-contact.js" defer></script>
+    <script src="/admin/js/admin-vat-leach.js" defer></script>
+    <script src="/admin/js/admin-equipment.js" defer></script>
+    <script src="/admin/js/admin-mining-support.js" defer></script>
+    <script src="/admin/js/admin-careers.js" defer></script>
+    <script src="/admin/js/admin-vacancies.js" defer></script>
+    <script src="/admin/js/admin-settings.js" defer></script>
   </body>
 </html>
