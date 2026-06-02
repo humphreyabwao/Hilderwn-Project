@@ -140,13 +140,36 @@ Manage vacancies and read submissions in the [Firebase Console](https://console.
 
 ---
 
-## Deployment
+## Deployment (Firebase Hosting)
 
-1. Upload the repository contents to your web host (or connect GitHub for auto-deploy).
-2. Enable **clean URLs** / directory index so `/about` serves `about/index.html`.
-3. Point your domain (e.g. `hildernwmining.co.ke`) to the host.
-4. Ensure Firestore rules allow public **read** on `vacancies` and **create** on form collections.
-5. Submit `sitemap.xml` in [Google Search Console](https://search.google.com/search-console).
+The site is deployed on **Firebase Hosting** (project: `hildernw-project`).
+
+| URL | |
+|-----|---|
+| **Live (Firebase)** | https://hildernw-project.web.app |
+| **Alternate** | https://hildernw-project.firebaseapp.com |
+| **Custom domain** | https://hildernwmining.co.ke *(connect in Firebase Console)* |
+
+### Deploy updates
+
+```bash
+cd /Users/a1708/Desktop/Hildernw
+firebase deploy --only hosting
+```
+
+Requires [Firebase CLI](https://firebase.google.com/docs/cli) and login (`firebase login`). Config files: `firebase.json`, `.firebaserc`.
+
+### Custom domain
+
+1. Open [Firebase Console → Hosting](https://console.firebase.google.com/project/hildernw-project/hosting)
+2. **Add custom domain** → `hildernwmining.co.ke`
+3. Add the DNS records Firebase provides at your registrar
+4. Wait for SSL provisioning (usually minutes to a few hours)
+
+### Checklist
+
+- Firestore rules allow public **read** on `vacancies` and **create** on form collections
+- Submit `sitemap.xml` in [Google Search Console](https://search.google.com/search-console)
 
 ---
 

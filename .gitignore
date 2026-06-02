@@ -3,3 +3,8 @@ Thumbs.db
 *.log
 .env
 .env.*
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
