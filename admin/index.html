@@ -11,6 +11,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/admin.css" />
+    <script>
+      (function () {
+        var modes = ['light', 'dark', 'system'];
+        var mode = 'system';
+        try {
+          var s = localStorage.getItem('admin-theme-mode');
+          if (modes.indexOf(s) !== -1) mode = s;
+        } catch (e) {}
+        var resolved = mode === 'system'
+          ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : mode;
+        document.documentElement.setAttribute('data-theme', resolved);
+        document.documentElement.setAttribute('data-theme-mode', mode);
+      })();
+    </script>
   </head>
   <body class="is-auth-pending">
 
@@ -89,14 +104,30 @@
           </div>
           <div class="admin-topbar__right">
 
+            <button type="button" class="admin-theme-toggle" id="admin-theme-btn" aria-label="Switch to dark mode" aria-pressed="false" title="Dark mode">
+              <span class="admin-theme-toggle__icons" aria-hidden="true">
+                <svg class="admin-theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                <svg class="admin-theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+              </span>
+            </button>
+
             <div class="admin-notify" id="admin-notify">
               <button type="button" class="admin-topbar__icon-btn" id="admin-notify-btn" aria-label="Notifications" aria-expanded="false" aria-haspopup="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 106 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <span class="admin-notify__badge" id="admin-notify-badge" hidden aria-hidden="true">0</span>
               </button>
               <div class="admin-notify__dropdown" id="admin-notify-dropdown" role="menu" hidden>
-                <div class="admin-notify__head"><strong>Notifications</strong></div>
-                <p class="admin-notify__empty">None</p>
+                <div class="admin-notify__head">
+                  <strong>Notifications</strong>
+                  <span class="admin-notify__new-pill" id="admin-notify-new-pill" hidden>0 new</span>
+                </div>
+                <div class="admin-notify__list" id="admin-notify-list" role="list" aria-live="polite">
+                  <p class="admin-notify__loading">Loading…</p>
+                </div>
+                <p class="admin-notify__empty" id="admin-notify-empty" hidden>You're all caught up — no new activity.</p>
+                <div class="admin-notify__foot">
+                  <button type="button" class="admin-notify__view-all" data-module="dashboard">Open dashboard</button>
+                </div>
               </div>
             </div>
 
@@ -115,7 +146,7 @@
                   </div>
                 </div>
                 <div class="admin-user__menu">
-                  <button type="button" class="admin-user__item" data-module="profile" role="menuitem">
+                  <button type="button" class="admin-user__item" data-settings-tab="profile" role="menuitem">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     Profile
                   </button>
@@ -138,53 +169,778 @@
 
           <section class="admin-module is-active" data-module-panel="dashboard" aria-labelledby="mod-dashboard-title">
             <h2 class="admin-module__title" id="mod-dashboard-title">Dashboard</h2>
-            <div class="admin-stats">
-              <div class="admin-stat"><p class="admin-stat__label">Contact</p><p class="admin-stat__value">—</p></div>
-              <div class="admin-stat"><p class="admin-stat__label">Rentals</p><p class="admin-stat__value">—</p></div>
-              <div class="admin-stat"><p class="admin-stat__label">Applications</p><p class="admin-stat__value">—</p></div>
-              <div class="admin-stat"><p class="admin-stat__label">Vacancies</p><p class="admin-stat__value">—</p></div>
+
+            <div class="dash-stats" id="dash-stats">
+              <button type="button" class="dash-stat dash-stat--contact" data-module="contact" data-stat="contact">
+                <span class="dash-stat__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+                </span>
+                <span class="dash-stat__body">
+                  <span class="dash-stat__label">Contact</span>
+                  <span class="dash-stat__value" id="stat-contact">—</span>
+                </span>
+              </button>
+              <button type="button" class="dash-stat dash-stat--vat" data-module="vat-leach" data-stat="vat-leach">
+                <span class="dash-stat__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </span>
+                <span class="dash-stat__body">
+                  <span class="dash-stat__label">Vat leach</span>
+                  <span class="dash-stat__value" id="stat-vat-leach">—</span>
+                </span>
+              </button>
+              <button type="button" class="dash-stat dash-stat--equipment" data-module="equipment" data-stat="equipment">
+                <span class="dash-stat__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="6" width="15" height="10" rx="1"/><path d="M16 10h4l3 3v3h-7v-6z"/><circle cx="5.5" cy="18" r="2"/><circle cx="18.5" cy="18" r="2"/></svg>
+                </span>
+                <span class="dash-stat__body">
+                  <span class="dash-stat__label">Equipment</span>
+                  <span class="dash-stat__value" id="stat-equipment">—</span>
+                </span>
+              </button>
+              <button type="button" class="dash-stat dash-stat--mining" data-module="mining-support" data-stat="mining-support">
+                <span class="dash-stat__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+                </span>
+                <span class="dash-stat__body">
+                  <span class="dash-stat__label">Mining support</span>
+                  <span class="dash-stat__value" id="stat-mining-support">—</span>
+                </span>
+              </button>
+              <button type="button" class="dash-stat dash-stat--careers" data-module="careers" data-stat="careers">
+                <span class="dash-stat__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
+                <span class="dash-stat__body">
+                  <span class="dash-stat__label">Applications</span>
+                  <span class="dash-stat__value" id="stat-careers">—</span>
+                </span>
+              </button>
+              <button type="button" class="dash-stat dash-stat--vacancies" data-module="vacancies" data-stat="vacancies">
+                <span class="dash-stat__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                </span>
+                <span class="dash-stat__body">
+                  <span class="dash-stat__label">Vacancies</span>
+                  <span class="dash-stat__value" id="stat-vacancies">—</span>
+                </span>
+              </button>
             </div>
-            <div class="admin-empty" aria-hidden="true"></div>
+
+            <p class="dash-alert" id="dash-alert" hidden role="alert"></p>
+
+            <h3 class="dash-heading">Quick access</h3>
+            <div class="dash-quick" id="dash-quick">
+              <button type="button" class="dash-quick__card dash-quick__card--contact" data-module="contact">
+                <span class="dash-quick__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+                </span>
+                <span class="dash-quick__label">Contact</span>
+              </button>
+              <button type="button" class="dash-quick__card dash-quick__card--vat" data-module="vat-leach">
+                <span class="dash-quick__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </span>
+                <span class="dash-quick__label">Vat leach</span>
+              </button>
+              <button type="button" class="dash-quick__card dash-quick__card--equipment" data-module="equipment">
+                <span class="dash-quick__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="6" width="15" height="10" rx="1"/><path d="M16 10h4l3 3v3h-7v-6z"/><circle cx="5.5" cy="18" r="2"/><circle cx="18.5" cy="18" r="2"/></svg>
+                </span>
+                <span class="dash-quick__label">Equipment</span>
+              </button>
+              <button type="button" class="dash-quick__card dash-quick__card--mining" data-module="mining-support">
+                <span class="dash-quick__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+                </span>
+                <span class="dash-quick__label">Mining support</span>
+              </button>
+              <button type="button" class="dash-quick__card dash-quick__card--careers" data-module="careers">
+                <span class="dash-quick__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
+                <span class="dash-quick__label">Applications</span>
+              </button>
+              <button type="button" class="dash-quick__card dash-quick__card--vacancies" data-module="vacancies">
+                <span class="dash-quick__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                </span>
+                <span class="dash-quick__label">Vacancies</span>
+              </button>
+            </div>
+
+            <div class="dash-recent-head">
+              <h3 class="dash-heading">Today's activity</h3>
+              <button type="button" class="dash-recent__clear" id="dash-recent-clear" hidden>Clear</button>
+            </div>
+            <div class="dash-recent" id="dash-recent">
+              <p class="dash-recent__loading">Loading…</p>
+            </div>
           </section>
 
           <section class="admin-module" data-module-panel="contact" aria-labelledby="mod-contact-title">
-            <h2 class="admin-module__title" id="mod-contact-title">Contact</h2>
-            <div class="admin-empty"></div>
+            <div class="mod-toolbar">
+              <h2 class="admin-module__title" id="mod-contact-title">Contact enquiries</h2>
+              <span class="mod-total"><span class="mod-badge" id="contact-count" title="Total enquiries ever received">—</span><span class="mod-total__label">all time</span></span>
+            </div>
+
+            <div class="mod-controls" id="contact-controls">
+              <div class="mod-search">
+                <svg class="mod-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="search" class="mod-search__input" id="contact-search" placeholder="Search client ID, name, or email…" autocomplete="off" aria-label="Search enquiries">
+              </div>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Filter by status</span>
+                <select class="mod-select" id="contact-status-filter" aria-label="Filter by status">
+                  <option value="all">All statuses</option>
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="replied">Replied</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </label>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Rows per page</span>
+                <select class="mod-select" id="contact-page-size" aria-label="Rows per page">
+                  <option value="25" selected>25 / page</option>
+                  <option value="50">50 / page</option>
+                  <option value="100">100 / page</option>
+                </select>
+              </label>
+              <button type="button" class="mod-btn mod-btn--ghost" id="contact-refresh" title="Refresh">Refresh</button>
+            </div>
+
+            <div class="mod-panel mod-table-panel" id="mod-contact">
+              <p class="mod-loading" id="contact-loading">Loading enquiries…</p>
+              <div class="mod-table-wrap" id="contact-table-wrap" hidden>
+                <table class="mod-table" id="contact-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Client ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Company</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Service</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Received</th>
+                      <th scope="col" class="mod-table__actions-col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="contact-tbody"></tbody>
+                </table>
+              </div>
+              <p class="mod-list-empty" id="contact-empty" hidden>No enquiries match your filters.</p>
+            </div>
+
+            <div class="mod-pagination" id="contact-pagination" hidden>
+              <p class="mod-pagination__info" id="contact-page-info">Page 1</p>
+              <div class="mod-pagination__nav">
+                <button type="button" class="mod-btn mod-btn--ghost" id="contact-prev" disabled>Previous</button>
+                <button type="button" class="mod-btn mod-btn--ghost" id="contact-next" disabled>Next</button>
+              </div>
+            </div>
           </section>
+
+          <div class="mod-modal" id="contact-modal" hidden role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+            <div class="mod-modal__backdrop" data-close-modal="contact"></div>
+            <div class="mod-modal__box">
+              <header class="mod-modal__head">
+                <h3 id="contact-modal-title">Enquiry details</h3>
+                <button type="button" class="mod-modal__close" data-close-modal="contact" aria-label="Close">&times;</button>
+              </header>
+              <div class="mod-modal__body" id="contact-modal-body"></div>
+              <footer class="mod-modal__foot" id="contact-modal-foot"></footer>
+            </div>
+          </div>
 
           <section class="admin-module" data-module-panel="vat-leach" aria-labelledby="mod-vat-title">
-            <h2 class="admin-module__title" id="mod-vat-title">Vat leach</h2>
-            <div class="admin-empty"></div>
+            <div class="mod-toolbar">
+              <h2 class="admin-module__title" id="mod-vat-title">Vat leach rentals</h2>
+              <span class="mod-total"><span class="mod-badge" id="vat-leach-count" title="Total requests ever received">—</span><span class="mod-total__label">all time</span></span>
+            </div>
+
+            <div class="mod-controls" id="vat-leach-controls">
+              <div class="mod-search">
+                <svg class="mod-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="search" class="mod-search__input" id="vat-leach-search" placeholder="Search client ID, name, or email…" autocomplete="off" aria-label="Search rental requests">
+              </div>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Filter by status</span>
+                <select class="mod-select" id="vat-leach-status-filter" aria-label="Filter by status">
+                  <option value="all">All statuses</option>
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="replied">Replied</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </label>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Rows per page</span>
+                <select class="mod-select" id="vat-leach-page-size" aria-label="Rows per page">
+                  <option value="25" selected>25 / page</option>
+                  <option value="50">50 / page</option>
+                  <option value="100">100 / page</option>
+                </select>
+              </label>
+              <button type="button" class="mod-btn mod-btn--ghost" id="vat-leach-refresh" title="Refresh">Refresh</button>
+            </div>
+
+            <div class="mod-panel mod-table-panel" id="mod-vat-leach">
+              <p class="mod-loading" id="vat-leach-loading">Loading rental requests…</p>
+              <div class="mod-table-wrap" id="vat-leach-table-wrap" hidden>
+                <table class="mod-table" id="vat-leach-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Client ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Company</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Location</th>
+                      <th scope="col">Duration</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Received</th>
+                      <th scope="col" class="mod-table__actions-col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="vat-leach-tbody"></tbody>
+                </table>
+              </div>
+              <p class="mod-list-empty" id="vat-leach-empty" hidden>No rental requests match your filters.</p>
+            </div>
+
+            <div class="mod-pagination" id="vat-leach-pagination" hidden>
+              <p class="mod-pagination__info" id="vat-leach-page-info">Page 1</p>
+              <div class="mod-pagination__nav">
+                <button type="button" class="mod-btn mod-btn--ghost" id="vat-leach-prev" disabled>Previous</button>
+                <button type="button" class="mod-btn mod-btn--ghost" id="vat-leach-next" disabled>Next</button>
+              </div>
+            </div>
           </section>
+
+          <div class="mod-modal" id="vat-leach-modal" hidden role="dialog" aria-modal="true" aria-labelledby="vat-leach-modal-title">
+            <div class="mod-modal__backdrop" data-close-modal="vat-leach"></div>
+            <div class="mod-modal__box">
+              <header class="mod-modal__head">
+                <h3 id="vat-leach-modal-title">Rental request details</h3>
+                <button type="button" class="mod-modal__close" data-close-modal="vat-leach" aria-label="Close">&times;</button>
+              </header>
+              <div class="mod-modal__body" id="vat-leach-modal-body"></div>
+              <footer class="mod-modal__foot" id="vat-leach-modal-foot"></footer>
+            </div>
+          </div>
 
           <section class="admin-module" data-module-panel="equipment" aria-labelledby="mod-equipment-title">
-            <h2 class="admin-module__title" id="mod-equipment-title">Equipment</h2>
-            <div class="admin-empty"></div>
+            <div class="mod-toolbar">
+              <h2 class="admin-module__title" id="mod-equipment-title">Equipment rentals</h2>
+              <span class="mod-total"><span class="mod-badge" id="equipment-count" title="Total requests ever received">—</span><span class="mod-total__label">all time</span></span>
+            </div>
+
+            <div class="mod-controls" id="equipment-controls">
+              <div class="mod-search">
+                <svg class="mod-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="search" class="mod-search__input" id="equipment-search" placeholder="Search client ID, name, or email…" autocomplete="off" aria-label="Search equipment requests">
+              </div>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Filter by status</span>
+                <select class="mod-select" id="equipment-status-filter" aria-label="Filter by status">
+                  <option value="all">All statuses</option>
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="replied">Replied</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </label>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Rows per page</span>
+                <select class="mod-select" id="equipment-page-size" aria-label="Rows per page">
+                  <option value="25" selected>25 / page</option>
+                  <option value="50">50 / page</option>
+                  <option value="100">100 / page</option>
+                </select>
+              </label>
+              <button type="button" class="mod-btn mod-btn--ghost" id="equipment-refresh" title="Refresh">Refresh</button>
+            </div>
+
+            <div class="mod-panel mod-table-panel" id="mod-equipment">
+              <p class="mod-loading" id="equipment-loading">Loading equipment requests…</p>
+              <div class="mod-table-wrap" id="equipment-table-wrap" hidden>
+                <table class="mod-table" id="equipment-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Client ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Company</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Equipment</th>
+                      <th scope="col">Duration</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Received</th>
+                      <th scope="col" class="mod-table__actions-col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="equipment-tbody"></tbody>
+                </table>
+              </div>
+              <p class="mod-list-empty" id="equipment-empty" hidden>No equipment requests match your filters.</p>
+            </div>
+
+            <div class="mod-pagination" id="equipment-pagination" hidden>
+              <p class="mod-pagination__info" id="equipment-page-info">Page 1</p>
+              <div class="mod-pagination__nav">
+                <button type="button" class="mod-btn mod-btn--ghost" id="equipment-prev" disabled>Previous</button>
+                <button type="button" class="mod-btn mod-btn--ghost" id="equipment-next" disabled>Next</button>
+              </div>
+            </div>
           </section>
+
+          <div class="mod-modal" id="equipment-modal" hidden role="dialog" aria-modal="true" aria-labelledby="equipment-modal-title">
+            <div class="mod-modal__backdrop" data-close-modal="equipment"></div>
+            <div class="mod-modal__box">
+              <header class="mod-modal__head">
+                <h3 id="equipment-modal-title">Equipment rental details</h3>
+                <button type="button" class="mod-modal__close" data-close-modal="equipment" aria-label="Close">&times;</button>
+              </header>
+              <div class="mod-modal__body" id="equipment-modal-body"></div>
+              <footer class="mod-modal__foot" id="equipment-modal-foot"></footer>
+            </div>
+          </div>
 
           <section class="admin-module" data-module-panel="mining-support" aria-labelledby="mod-mining-title">
-            <h2 class="admin-module__title" id="mod-mining-title">Mining support</h2>
-            <div class="admin-empty"></div>
+            <div class="mod-toolbar">
+              <h2 class="admin-module__title" id="mod-mining-title">Mining support enquiries</h2>
+              <span class="mod-total"><span class="mod-badge" id="mining-support-count" title="Total enquiries ever received">—</span><span class="mod-total__label">all time</span></span>
+            </div>
+
+            <div class="mod-controls" id="mining-support-controls">
+              <div class="mod-search">
+                <svg class="mod-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="search" class="mod-search__input" id="mining-support-search" placeholder="Search client ID, name, or email…" autocomplete="off" aria-label="Search mining support enquiries">
+              </div>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Filter by status</span>
+                <select class="mod-select" id="mining-support-status-filter" aria-label="Filter by status">
+                  <option value="all">All statuses</option>
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="replied">Replied</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </label>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Rows per page</span>
+                <select class="mod-select" id="mining-support-page-size" aria-label="Rows per page">
+                  <option value="25" selected>25 / page</option>
+                  <option value="50">50 / page</option>
+                  <option value="100">100 / page</option>
+                </select>
+              </label>
+              <button type="button" class="mod-btn mod-btn--ghost" id="mining-support-refresh" title="Refresh">Refresh</button>
+            </div>
+
+            <div class="mod-panel mod-table-panel" id="mod-mining-support">
+              <p class="mod-loading" id="mining-support-loading">Loading enquiries…</p>
+              <div class="mod-table-wrap" id="mining-support-table-wrap" hidden>
+                <table class="mod-table" id="mining-support-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Client ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Company</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Support type</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Received</th>
+                      <th scope="col" class="mod-table__actions-col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="mining-support-tbody"></tbody>
+                </table>
+              </div>
+              <p class="mod-list-empty" id="mining-support-empty" hidden>No enquiries match your filters.</p>
+            </div>
+
+            <div class="mod-pagination" id="mining-support-pagination" hidden>
+              <p class="mod-pagination__info" id="mining-support-page-info">Page 1</p>
+              <div class="mod-pagination__nav">
+                <button type="button" class="mod-btn mod-btn--ghost" id="mining-support-prev" disabled>Previous</button>
+                <button type="button" class="mod-btn mod-btn--ghost" id="mining-support-next" disabled>Next</button>
+              </div>
+            </div>
           </section>
+
+          <div class="mod-modal" id="mining-support-modal" hidden role="dialog" aria-modal="true" aria-labelledby="mining-support-modal-title">
+            <div class="mod-modal__backdrop" data-close-modal="mining-support"></div>
+            <div class="mod-modal__box">
+              <header class="mod-modal__head">
+                <h3 id="mining-support-modal-title">Mining support enquiry</h3>
+                <button type="button" class="mod-modal__close" data-close-modal="mining-support" aria-label="Close">&times;</button>
+              </header>
+              <div class="mod-modal__body" id="mining-support-modal-body"></div>
+              <footer class="mod-modal__foot" id="mining-support-modal-foot"></footer>
+            </div>
+          </div>
 
           <section class="admin-module" data-module-panel="careers" aria-labelledby="mod-careers-title">
-            <h2 class="admin-module__title" id="mod-careers-title">Applications</h2>
-            <div class="admin-empty"></div>
+            <div class="mod-toolbar">
+              <h2 class="admin-module__title" id="mod-careers-title">Job applications</h2>
+              <span class="mod-total"><span class="mod-badge" id="careers-count" title="Total applications ever received">—</span><span class="mod-total__label">all time</span></span>
+            </div>
+
+            <div class="mod-controls" id="careers-controls">
+              <div class="mod-search">
+                <svg class="mod-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="search" class="mod-search__input" id="careers-search" placeholder="Search client ID, name, or email…" autocomplete="off" aria-label="Search applications">
+              </div>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Filter by status</span>
+                <select class="mod-select" id="careers-status-filter" aria-label="Filter by status">
+                  <option value="all">All statuses</option>
+                  <option value="new">New</option>
+                  <option value="under-review">Under review</option>
+                  <option value="interview">Interview</option>
+                  <option value="hired">Hired</option>
+                  <option value="rejected">Not selected</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="replied">Replied</option>
+                  <option value="closed">Archived</option>
+                </select>
+              </label>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Rows per page</span>
+                <select class="mod-select" id="careers-page-size" aria-label="Rows per page">
+                  <option value="25" selected>25 / page</option>
+                  <option value="50">50 / page</option>
+                  <option value="100">100 / page</option>
+                </select>
+              </label>
+              <button type="button" class="mod-btn mod-btn--ghost" id="careers-refresh" title="Refresh">Refresh</button>
+            </div>
+
+            <div class="mod-panel mod-table-panel" id="mod-careers">
+              <p class="mod-loading" id="careers-loading">Loading applications…</p>
+              <div class="mod-table-wrap" id="careers-table-wrap" hidden>
+                <table class="mod-table" id="careers-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Client ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Phone</th>
+                      <th scope="col">Position</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Received</th>
+                      <th scope="col" class="mod-table__actions-col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="careers-tbody"></tbody>
+                </table>
+              </div>
+              <p class="mod-list-empty" id="careers-empty" hidden>No applications match your filters.</p>
+            </div>
+
+            <div class="mod-pagination" id="careers-pagination" hidden>
+              <p class="mod-pagination__info" id="careers-page-info">Page 1</p>
+              <div class="mod-pagination__nav">
+                <button type="button" class="mod-btn mod-btn--ghost" id="careers-prev" disabled>Previous</button>
+                <button type="button" class="mod-btn mod-btn--ghost" id="careers-next" disabled>Next</button>
+              </div>
+            </div>
           </section>
+
+          <div class="mod-modal" id="careers-modal" hidden role="dialog" aria-modal="true" aria-labelledby="careers-modal-title">
+            <div class="mod-modal__backdrop" data-close-modal="careers"></div>
+            <div class="mod-modal__box">
+              <header class="mod-modal__head">
+                <h3 id="careers-modal-title">Application details</h3>
+                <button type="button" class="mod-modal__close" data-close-modal="careers" aria-label="Close">&times;</button>
+              </header>
+              <div class="mod-modal__body" id="careers-modal-body"></div>
+              <footer class="mod-modal__foot" id="careers-modal-foot"></footer>
+            </div>
+          </div>
 
           <section class="admin-module" data-module-panel="vacancies" aria-labelledby="mod-vacancies-title">
-            <h2 class="admin-module__title" id="mod-vacancies-title">Vacancies</h2>
-            <div class="admin-empty"></div>
+            <div class="mod-toolbar">
+              <h2 class="admin-module__title" id="mod-vacancies-title">Vacancies</h2>
+              <span class="mod-total"><span class="mod-badge" id="vacancies-count" title="Total vacancies ever created">—</span><span class="mod-total__label">all time</span></span>
+              <button type="button" class="mod-btn mod-btn--sm" id="vacancies-add" style="margin-left:auto">+ Add vacancy</button>
+            </div>
+
+            <div class="mod-controls" id="vacancies-controls">
+              <div class="mod-search">
+                <svg class="mod-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="search" class="mod-search__input" id="vacancies-search" placeholder="Search vacancy ID, title, or location…" autocomplete="off" aria-label="Search vacancies">
+              </div>
+              <label class="mod-select-wrap">
+                <span class="visually-hidden">Filter by status</span>
+                <select class="mod-select" id="vacancies-filter" aria-label="Filter listings">
+                  <option value="all">All listings</option>
+                  <option value="active">Active only</option>
+                  <option value="inactive">Hidden only</option>
+                </select>
+              </label>
+              <button type="button" class="mod-btn mod-btn--ghost" id="vacancies-refresh" title="Refresh">Refresh</button>
+            </div>
+
+            <div class="mod-panel mod-table-panel" id="mod-vacancies">
+              <p class="mod-loading" id="vacancies-loading">Loading vacancies…</p>
+              <div class="mod-table-wrap" id="vacancies-table-wrap" hidden>
+                <table class="mod-table" id="vacancies-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Vacancy ID</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Location</th>
+                      <th scope="col">Posted</th>
+                      <th scope="col">Order</th>
+                      <th scope="col">Status</th>
+                      <th scope="col" class="mod-table__actions-col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="vacancies-tbody"></tbody>
+                </table>
+              </div>
+              <p class="mod-list-empty" id="vacancies-empty" hidden>No vacancies yet. Click “Add vacancy” to publish a role.</p>
+            </div>
           </section>
 
-          <section class="admin-module" data-module-panel="profile" aria-labelledby="mod-profile-title">
-            <h2 class="admin-module__title" id="mod-profile-title">Profile</h2>
-            <div class="admin-empty"></div>
-          </section>
+          <div class="mod-modal mod-modal--wide" id="vacancies-view-modal" hidden role="dialog" aria-modal="true" aria-labelledby="vacancies-view-modal-title">
+            <div class="mod-modal__backdrop" data-close-vacancy-view></div>
+            <div class="mod-modal__box">
+              <header class="mod-modal__head">
+                <h3 id="vacancies-view-modal-title">Vacancy details</h3>
+                <button type="button" class="mod-modal__close" data-close-vacancy-view aria-label="Close">&times;</button>
+              </header>
+              <div class="mod-modal__body" id="vacancies-view-body"></div>
+              <footer class="mod-modal__foot">
+                <button type="button" class="mod-btn mod-btn--ghost" data-close-vacancy-view>Close</button>
+                <button type="button" class="mod-btn mod-btn--sm" id="vacancies-view-edit">Edit vacancy</button>
+              </footer>
+            </div>
+          </div>
+
+          <div class="mod-modal mod-modal--wide" id="vacancies-modal" hidden role="dialog" aria-modal="true" aria-labelledby="vacancies-modal-title">
+            <div class="mod-modal__backdrop" data-close-vacancy-modal></div>
+            <div class="mod-modal__box">
+              <header class="mod-modal__head">
+                <h3 id="vacancies-modal-title">Add vacancy</h3>
+                <button type="button" class="mod-modal__close" data-close-vacancy-modal aria-label="Close">&times;</button>
+              </header>
+              <form class="vac-form" id="vacancies-form">
+                <div class="mod-modal__body vac-form__body">
+                  <div class="vac-form__grid">
+                    <label class="vac-form__field vac-form__field--full" id="vac-field-id-wrap">
+                      <span class="vac-form__label">Vacancy ID</span>
+                      <input type="text" id="vac-field-vacancy-id" readonly placeholder="Assigned on save (e.g. V-001)">
+                    </label>
+                    <label class="vac-form__field vac-form__field--full">
+                      <span class="vac-form__label">Job title <em>*</em></span>
+                      <input type="text" name="title" id="vac-field-title" required placeholder="e.g. Mining Engineer">
+                    </label>
+                    <label class="vac-form__field">
+                      <span class="vac-form__label">Employment type</span>
+                      <select name="employment_type" id="vac-field-type">
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Internship">Internship</option>
+                      </select>
+                    </label>
+                    <label class="vac-form__field">
+                      <span class="vac-form__label">Location</span>
+                      <input type="text" name="location" id="vac-field-location" value="Warianda" placeholder="Warianda">
+                    </label>
+                    <label class="vac-form__field">
+                      <span class="vac-form__label">Posted label</span>
+                      <input type="text" name="posted_label" id="vac-field-posted" placeholder="e.g. June 2026">
+                    </label>
+                    <label class="vac-form__field">
+                      <span class="vac-form__label">Sort order</span>
+                      <input type="number" name="sort_order" id="vac-field-sort" value="0" min="0" step="1">
+                    </label>
+                    <label class="vac-form__field vac-form__field--check">
+                      <input type="checkbox" name="active" id="vac-field-active" checked />
+                      <span>Visible on careers page</span>
+                    </label>
+                    <label class="vac-form__field vac-form__field--full">
+                      <span class="vac-form__label">Description <em>*</em></span>
+                      <textarea name="description" id="vac-field-description" rows="4" required placeholder="Role summary. Use blank lines between paragraphs."></textarea>
+                    </label>
+                    <label class="vac-form__field vac-form__field--full">
+                      <span class="vac-form__label">Requirements (one per line)</span>
+                      <textarea name="requirements" id="vac-field-requirements" rows="4" placeholder="Degree in mining engineering&#10;3+ years site experience"></textarea>
+                    </label>
+                    <label class="vac-form__field vac-form__field--full">
+                      <span class="vac-form__label">Benefits (one per line)</span>
+                      <textarea name="benefits" id="vac-field-benefits" rows="3" placeholder="Competitive salary&#10;Health cover"></textarea>
+                    </label>
+                  </div>
+                  <p class="vac-form__error" id="vacancies-form-error" hidden></p>
+                </div>
+                <footer class="mod-modal__foot">
+                  <button type="button" class="mod-btn mod-btn--ghost" data-close-vacancy-modal>Cancel</button>
+                  <button type="submit" class="mod-btn" id="vacancies-save">Save vacancy</button>
+                </footer>
+              </form>
+            </div>
+          </div>
 
           <section class="admin-module" data-module-panel="settings" aria-labelledby="mod-settings-title">
             <h2 class="admin-module__title" id="mod-settings-title">Settings</h2>
-            <div class="admin-empty"></div>
+
+            <div class="settings">
+              <nav class="settings__tabs" role="tablist" aria-label="Settings sections">
+                <button type="button" class="settings__tab is-active" role="tab" id="settings-tab-profile" data-settings-tab="profile" aria-selected="true" aria-controls="settings-panel-profile">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Profile
+                </button>
+                <button type="button" class="settings__tab" role="tab" id="settings-tab-account" data-settings-tab="account" aria-selected="false" aria-controls="settings-panel-account">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                  Account
+                </button>
+                <button type="button" class="settings__tab" role="tab" id="settings-tab-preferences" data-settings-tab="preferences" aria-selected="false" aria-controls="settings-panel-preferences">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                  Preferences
+                </button>
+              </nav>
+
+              <div class="settings__body">
+
+                <!-- Profile -->
+                <div class="settings__panel is-active" id="settings-panel-profile" role="tabpanel" aria-labelledby="settings-tab-profile" data-settings-panel="profile">
+                  <div class="settings__card">
+                    <div class="settings__profile-head">
+                      <div class="settings__avatar-wrap">
+                        <span class="settings__avatar" id="settings-avatar" data-admin-avatar-settings>A</span>
+                        <label class="settings__avatar-color">
+                          <span class="visually-hidden">Avatar colour</span>
+                          <input type="color" id="settings-avatar-color" value="#0ea5e9" title="Avatar colour" />
+                        </label>
+                      </div>
+                      <div class="settings__profile-intro">
+                        <h3 id="settings-display-preview">Admin</h3>
+                        <p id="settings-email-preview">—</p>
+                        <p class="settings__meta" id="settings-member-since">—</p>
+                      </div>
+                    </div>
+
+                    <form id="settings-profile-form" class="vac-form" novalidate>
+                      <div class="vac-form__body">
+                        <div class="vac-form__grid">
+                          <label class="vac-form__field vac-form__field--full">
+                            <span class="vac-form__label">Display name</span>
+                            <input type="text" id="settings-display-name" name="display_name" required autocomplete="name" maxlength="80" placeholder="Your name" />
+                          </label>
+                          <label class="vac-form__field">
+                            <span class="vac-form__label">Job title</span>
+                            <input type="text" id="settings-job-title" name="job_title" autocomplete="organization-title" maxlength="80" placeholder="e.g. Operations Manager" />
+                          </label>
+                          <label class="vac-form__field">
+                            <span class="vac-form__label">Department</span>
+                            <input type="text" id="settings-department" name="department" maxlength="80" placeholder="e.g. Mining operations" />
+                          </label>
+                          <label class="vac-form__field">
+                            <span class="vac-form__label">Phone</span>
+                            <input type="tel" id="settings-phone" name="phone" autocomplete="tel" maxlength="30" placeholder="+254 …" />
+                          </label>
+                          <label class="vac-form__field">
+                            <span class="vac-form__label">Email</span>
+                            <input type="email" id="settings-email" disabled aria-readonly="true" />
+                          </label>
+                        </div>
+                        <p class="settings__form-msg" id="settings-profile-msg" hidden role="status"></p>
+                      </div>
+                      <footer class="settings__card-foot">
+                        <button type="submit" class="mod-btn" id="settings-profile-save">Save profile</button>
+                      </footer>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Account -->
+                <div class="settings__panel" id="settings-panel-account" role="tabpanel" aria-labelledby="settings-tab-account" data-settings-panel="account" hidden>
+                  <div class="settings__card">
+                    <h3 class="settings__card-title">Sign-in &amp; security</h3>
+                    <p class="settings__card-desc">Update your password. You will stay signed in on this device after a successful change.</p>
+
+                    <form id="settings-password-form" class="vac-form" novalidate>
+                      <div class="vac-form__body">
+                        <div class="vac-form__grid">
+                          <label class="vac-form__field vac-form__field--full">
+                            <span class="vac-form__label">Current password</span>
+                            <input type="password" id="settings-current-password" autocomplete="current-password" required />
+                          </label>
+                          <label class="vac-form__field">
+                            <span class="vac-form__label">New password</span>
+                            <input type="password" id="settings-new-password" autocomplete="new-password" required minlength="8" />
+                          </label>
+                          <label class="vac-form__field">
+                            <span class="vac-form__label">Confirm new password</span>
+                            <input type="password" id="settings-confirm-password" autocomplete="new-password" required minlength="8" />
+                          </label>
+                        </div>
+                        <p class="settings__hint">Use at least 8 characters with a mix of letters and numbers.</p>
+                        <p class="settings__form-msg" id="settings-password-msg" hidden role="status"></p>
+                      </div>
+                      <footer class="settings__card-foot">
+                        <button type="submit" class="mod-btn" id="settings-password-save">Update password</button>
+                      </footer>
+                    </form>
+                  </div>
+
+                  <div class="settings__card settings__card--muted">
+                    <h3 class="settings__card-title">Session</h3>
+                    <p class="settings__card-desc">Sign out of the admin panel on this browser.</p>
+                    <button type="button" class="mod-btn mod-btn--ghost" id="settings-logout-btn">Log out</button>
+                  </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="settings__panel" id="settings-panel-preferences" role="tabpanel" aria-labelledby="settings-tab-preferences" data-settings-panel="preferences" hidden>
+                  <div class="settings__card">
+                    <h3 class="settings__card-title">Admin preferences</h3>
+                    <p class="settings__card-desc">These apply to your account on this browser and device.</p>
+
+                    <form id="settings-prefs-form" class="vac-form" novalidate>
+                      <div class="vac-form__body">
+                        <div class="vac-form__grid">
+                          <label class="vac-form__field">
+                            <span class="vac-form__label">Appearance</span>
+                            <select id="settings-theme-mode" name="theme_mode" aria-label="Colour theme">
+                              <option value="system">Match system</option>
+                              <option value="light">Light</option>
+                              <option value="dark">Dark</option>
+                            </select>
+                          </label>
+                          <label class="vac-form__field">
+                            <span class="vac-form__label">Default table rows</span>
+                            <select id="settings-page-size" name="default_page_size">
+                              <option value="25">25 per page</option>
+                              <option value="50">50 per page</option>
+                              <option value="100">100 per page</option>
+                            </select>
+                          </label>
+                          <label class="vac-form__field vac-form__field--check">
+                            <input type="checkbox" id="settings-sidebar-collapsed" name="sidebar_collapsed" />
+                            <span>Start with sidebar collapsed</span>
+                          </label>
+                          <label class="vac-form__field vac-form__field--check">
+                            <input type="checkbox" id="settings-email-notify" name="email_notifications" />
+                            <span>Email me for new submissions (coming soon)</span>
+                          </label>
+                        </div>
+                        <p class="settings__form-msg" id="settings-prefs-msg" hidden role="status"></p>
+                      </div>
+                      <footer class="settings__card-foot">
+                        <button type="submit" class="mod-btn" id="settings-prefs-save">Save preferences</button>
+                      </footer>
+                    </form>
+                  </div>
+                </div>
+
+              </div>
+            </div>
           </section>
 
         </main>
@@ -196,7 +952,20 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="../js/firebase.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="js/admin-theme.js"></script>
+    <script src="js/admin-config.js"></script>
     <script src="js/admin-auth.js"></script>
     <script src="js/admin.js" defer></script>
+    <script src="js/admin-live-data.js" defer></script>
+    <script src="js/admin-dashboard.js" defer></script>
+    <script src="js/admin-notifications.js" defer></script>
+    <script src="js/admin-enquiry-module.js" defer></script>
+    <script src="js/admin-contact.js" defer></script>
+    <script src="js/admin-vat-leach.js" defer></script>
+    <script src="js/admin-equipment.js" defer></script>
+    <script src="js/admin-mining-support.js" defer></script>
+    <script src="js/admin-careers.js" defer></script>
+    <script src="js/admin-vacancies.js" defer></script>
+    <script src="js/admin-settings.js" defer></script>
   </body>
 </html>

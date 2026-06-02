@@ -198,3 +198,42 @@ img { display: block; }
     padding: 28px 22px 24px;
   }
 }
+
+html[data-theme="dark"] .login-card {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .login-card__brand strong {
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .login-card__brand span {
+  color: #38bdf8;
+}
+
+html[data-theme="dark"] .login-field span {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .login-field input {
+  color: #f1f5f9;
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html[data-theme="dark"] .login-field input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, .2);
+}
+
+html[data-theme="dark"] .login-footer {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .login-error.is-visible {
+  color: #fca5a5;
+  background: #7f1d1d;
+}

@@ -1,0 +1,192 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ── Admin access: add every Firebase Auth admin email here ── */
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email in [
+          'info@hildernwmining.co.ke'
+        ];
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isPublicFormCollection(name) {
+      return name in [
+        'contact_enquiries',
+        'vat_leach_rentals',
+        'equipment_rentals',
+        'mining_support_enquiries',
+        'career_applications'
+      ];
+    }
+
+    function stringMax(field, max) {
+      return !(field in request.resource.data)
+        || (request.resource.data[field] is string
+          && request.resource.data[field].size() > 0
+          && request.resource.data[field].size() <= max);
+    }
+
+    function optionalStringMax(field, max) {
+      return !(field in request.resource.data)
+        || request.resource.data[field] == ''
+        || (request.resource.data[field] is string
+          && request.resource.data[field].size() <= max);
+    }
+
+    function publicCreateGuards() {
+      let d = request.resource.data;
+      return d.submitted_at is string
+        && d.submitted_at.size() <= 40
+        && d.page is string
+        && d.page.size() <= 300
+        && !('admin_notes' in d)
+        && !('status_updated_at' in d)
+        && (!('status' in d) || d.status == 'new')
+        && stringMax('name', 120)
+        && stringMax('email', 254)
+        && optionalStringMax('phone', 40)
+        && optionalStringMax('message', 8000)
+        && optionalStringMax('company', 160)
+        && optionalStringMax('details', 8000)
+        && optionalStringMax('location', 160)
+        && optionalStringMax('job_title', 200)
+        && optionalStringMax('job_id', 80)
+        && optionalStringMax('vacancy_id', 20)
+        && optionalStringMax('service', 80)
+        && optionalStringMax('equipment', 80)
+        && optionalStringMax('duration', 40);
+    }
+
+    function clientIdCreateValid() {
+      let d = request.resource.data;
+      return d.client_id is string
+        && d.client_id.matches('H-[0-9]{3,}')
+        && d.client_id_lower is string
+        && d.client_id_lower.matches('h-[0-9]{3,}');
+    }
+
+    function needsClientId(collection) {
+      return collection == 'contact_enquiries'
+        || collection == 'vat_leach_rentals'
+        || collection == 'equipment_rentals'
+        || collection == 'mining_support_enquiries'
+        || collection == 'career_applications';
+    }
+
+    function adminEnquiryUpdateValid() {
+      let diff = request.resource.data.diff(resource.data);
+      return diff.affectedKeys().hasOnly([
+        'status',
+        'status_updated_at',
+        'admin_notes',
+        'client_id',
+        'client_id_lower',
+        'name',
+        'name_lower',
+        'email',
+        'email_lower',
+        'company',
+        'company_lower'
+      ]);
+    }
+
+    function vacancyDataValid() {
+      let d = request.resource.data;
+      return stringMax('title', 200)
+        && stringMax('description', 12000)
+        && optionalStringMax('employment_type', 80)
+        && optionalStringMax('location', 160)
+        && optionalStringMax('posted_label', 80)
+        && optionalStringMax('vacancy_id', 20)
+        && optionalStringMax('vacancy_id_lower', 20)
+        && optionalStringMax('updated_at', 40)
+        && optionalStringMax('created_at', 40)
+        && (!('requirements' in d) || d.requirements is list)
+        && (!('benefits' in d) || d.benefits is list)
+        && (!('active' in d) || d.active is bool)
+        && (!('sort_order' in d) || d.sort_order is int);
+    }
+
+    function profileDataValid() {
+      let d = request.resource.data;
+      return optionalStringMax('display_name', 80)
+        && optionalStringMax('job_title', 80)
+        && optionalStringMax('department', 80)
+        && optionalStringMax('phone', 40)
+        && optionalStringMax('avatar_color', 20)
+        && optionalStringMax('email', 254)
+        && optionalStringMax('updated_at', 40);
+    }
+
+    function preferencesDataValid() {
+      let d = request.resource.data;
+      return optionalStringMax('updated_at', 40)
+        && (!('default_page_size' in d) || d.default_page_size in [25, 50, 100])
+        && (!('sidebar_collapsed' in d) || d.sidebar_collapsed is bool)
+        && (!('email_notifications' in d) || d.email_notifications is bool)
+        && (!('theme_mode' in d) || d.theme_mode in ['light', 'dark', 'system']);
+    }
+
+    match /vacancies/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && vacancyDataValid();
+    }
+
+    match /admin_profiles/{userId} {
+      allow read, write: if isAdmin()
+        && request.auth.uid == userId
+        && profileDataValid();
+    }
+
+    match /admin_preferences/{userId} {
+      allow read, write: if isAdmin()
+        && request.auth.uid == userId
+        && preferencesDataValid();
+    }
+
+    function isEnquiryCounter() {
+      return counterId == 'contact_enquiries';
+    }
+
+    function isVacancyCounter() {
+      return counterId == 'vacancies';
+    }
+
+    function isPublicCounterStep() {
+      return request.auth == null
+        && request.resource.data.keys().hasOnly(['last'])
+        && request.resource.data.last is int
+        && (
+          (!resource.exists && request.resource.data.last == 1)
+          || (resource.exists
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['last'])
+            && request.resource.data.last == resource.data.last + 1)
+        );
+    }
+
+    match /_counters/{counterId} {
+      allow read: if isEnquiryCounter() || (isVacancyCounter() && isAdmin());
+      allow create, update: if (isEnquiryCounter() && (isAdmin() || isPublicCounterStep()))
+        || (isVacancyCounter() && isAdmin());
+      allow delete: if false;
+    }
+
+    match /{collection}/{docId} {
+      allow create: if isPublicFormCollection(collection)
+        && publicCreateGuards()
+        && (!needsClientId(collection) || clientIdCreateValid());
+
+      allow read, delete: if isAdmin() && isPublicFormCollection(collection);
+
+      allow update: if isAdmin()
+        && isPublicFormCollection(collection)
+        && adminEnquiryUpdateValid();
+    }
+  }
+}

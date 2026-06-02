@@ -3,50 +3,56 @@
 
   /* ── SCROLL: shadow + hide nav on scroll down ── */
   var header = document.getElementById('header');
-  var nav    = header.querySelector('.nav');
+  var nav    = header && header.querySelector('.nav');
   var lastY  = 0;
   var threshold = 80;
 
-  window.addEventListener('scroll', function () {
-    var y = window.scrollY;
-    header.classList.toggle('scrolled', y > 10);
+  if (header) {
+    window.addEventListener('scroll', function () {
+      var y = window.scrollY;
+      header.classList.toggle('scrolled', y > 10);
 
-    if (y > threshold) {
-      nav.classList.toggle('is-hidden', y > lastY);
-    } else {
-      nav.classList.remove('is-hidden');
-    }
+      if (nav) {
+        if (y > threshold) {
+          nav.classList.toggle('is-hidden', y > lastY);
+        } else {
+          nav.classList.remove('is-hidden');
+        }
+      }
 
-    lastY = y;
-  }, { passive: true });
+      lastY = y;
+    }, { passive: true });
+  }
 
 
   /* ── MOBILE MENU ───────────────────────────── */
   var burger = document.getElementById('burger');
   var menu   = document.getElementById('nav-menu');
 
-  burger.addEventListener('click', function () {
-    var open = burger.classList.toggle('is-open');
-    menu.classList.toggle('is-open', open);
-    burger.setAttribute('aria-expanded', String(open));
-  });
+  if (burger && menu) {
+    burger.addEventListener('click', function () {
+      var open = burger.classList.toggle('is-open');
+      menu.classList.toggle('is-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+    });
 
-  document.addEventListener('click', function (e) {
-    if (!menu.contains(e.target) && !burger.contains(e.target) && menu.classList.contains('is-open')) {
-      burger.classList.remove('is-open');
-      menu.classList.remove('is-open');
-      burger.setAttribute('aria-expanded', 'false');
-    }
-  });
+    document.addEventListener('click', function (e) {
+      if (!menu.contains(e.target) && !burger.contains(e.target) && menu.classList.contains('is-open')) {
+        burger.classList.remove('is-open');
+        menu.classList.remove('is-open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
+    });
 
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && menu.classList.contains('is-open')) {
-      burger.classList.remove('is-open');
-      menu.classList.remove('is-open');
-      burger.setAttribute('aria-expanded', 'false');
-      burger.focus();
-    }
-  });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains('is-open')) {
+        burger.classList.remove('is-open');
+        menu.classList.remove('is-open');
+        burger.setAttribute('aria-expanded', 'false');
+        burger.focus();
+      }
+    });
+  }
 
 
   /* ── DROPDOWN / ACCORDION TOGGLES ──────────── */
@@ -126,20 +132,33 @@
 
 
   /* ── SCROLL REVEAL ─────────────────────────── */
-  var reveals = document.querySelectorAll('.reveal, .reveal-left');
+  var revealObserver = null;
 
-  if (reveals.length && 'IntersectionObserver' in window) {
-    var observer = new IntersectionObserver(function (entries) {
+  if ('IntersectionObserver' in window) {
+    revealObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
+          revealObserver.unobserve(entry.target);
         }
       });
     }, { threshold: 0.15 });
-
-    reveals.forEach(function (el) { observer.observe(el); });
   }
+
+  window.observeReveals = function (root) {
+    var scope = root || document;
+    var els = scope.querySelectorAll('.reveal:not(.is-visible), .reveal-left:not(.is-visible)');
+    if (!els.length) return;
+
+    if (!revealObserver) {
+      els.forEach(function (el) { el.classList.add('is-visible'); });
+      return;
+    }
+
+    els.forEach(function (el) { revealObserver.observe(el); });
+  };
+
+  window.observeReveals(document);
 
 
   /* ── HORIZONTAL SCROLL ARROWS ──────────────── */

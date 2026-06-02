@@ -24,7 +24,6 @@
     'mining-support': 'Mining support',
     careers: 'Applications',
     vacancies: 'Vacancies',
-    profile: 'Profile',
     settings: 'Settings'
   };
 
@@ -78,6 +77,9 @@
     notifyBtn.classList.add('is-open');
     notifyBtn.setAttribute('aria-expanded', 'true');
     notifyDrop.hidden = false;
+    if (window.HildernwAdminNotify && typeof window.HildernwAdminNotify.refresh === 'function') {
+      window.HildernwAdminNotify.refresh();
+    }
   }
 
   function closeNotifyDropdown() {
@@ -159,9 +161,18 @@
   }
 
   if (userDrop) {
-    userDrop.querySelectorAll('[data-module]').forEach(function (item) {
+    userDrop.querySelectorAll('[data-module], [data-settings-tab]').forEach(function (item) {
       item.addEventListener('click', function () {
-        setActiveModule(item.getAttribute('data-module'));
+        var tab = item.getAttribute('data-settings-tab');
+        var mod = item.getAttribute('data-module');
+        if (tab) {
+          setActiveModule('settings');
+          if (typeof window.adminSettingsGoToTab === 'function') {
+            window.adminSettingsGoToTab(tab);
+          }
+          return;
+        }
+        if (mod) setActiveModule(mod);
       });
     });
   }
@@ -182,4 +193,17 @@
       closeUserDropdown();
     }
   });
+
+  var adminContent = document.querySelector('.admin-content');
+  if (adminContent) {
+    adminContent.addEventListener('click', function (e) {
+      var trigger = e.target.closest('[data-module]');
+      if (!trigger || !trigger.closest('.admin-module[data-module-panel="dashboard"]')) return;
+      if (!trigger.hasAttribute('data-module')) return;
+      var mod = trigger.getAttribute('data-module');
+      if (mod && mod !== 'dashboard') setActiveModule(mod);
+    });
+  }
+
+  window.adminGoToModule = setActiveModule;
 })();

@@ -33,6 +33,10 @@
     }
   });
 
+  if (window.location.search.indexOf('unauthorized=1') !== -1) {
+    showError('This account is not authorised for admin access.');
+  }
+
   if (!form) return;
 
   form.addEventListener('submit', function (e) {

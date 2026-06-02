@@ -11,6 +11,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../css/login.css" />
+    <script>
+      (function () {
+        var modes = ['light', 'dark', 'system'];
+        var mode = 'system';
+        try {
+          var s = localStorage.getItem('admin-theme-mode');
+          if (modes.indexOf(s) !== -1) mode = s;
+        } catch (e) {}
+        var resolved = mode === 'system'
+          ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : mode;
+        document.documentElement.setAttribute('data-theme', resolved);
+      })();
+    </script>
     <link rel="preload" as="image" href="../../assets/images/DSC_0908.jpg.jpeg" />
   </head>
   <body>
