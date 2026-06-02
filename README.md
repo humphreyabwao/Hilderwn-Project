@@ -40,6 +40,7 @@ Hildernw/
 ├── about/index.html        # About Us & Our Plant
 ├── sustainability/index.html
 ├── careers/index.html      # Dynamic job listings
+├── admin/index.html        # Admin dashboard (shell)
 ├── services/
 │   ├── index.html          # Services overview
 │   ├── vat-leach/

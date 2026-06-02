@@ -11,8 +11,11 @@ var firebaseConfig = {
   measurementId: "G-X0L8P9DQY1"
 };
 
-firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+var db = typeof firebase.firestore === 'function' ? firebase.firestore() : null;
 
 function submitForm(form, collectionName) {
   var btn = form.querySelector('button[type="submit"]');

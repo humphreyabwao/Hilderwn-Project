@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Hildernw Mining Limited</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpeg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/admin.css" />
+  </head>
+  <body class="is-auth-pending">
+
+    <div class="admin-app is-auth-pending" id="admin-app">
+
+      <aside class="admin-sidebar" id="admin-sidebar" aria-label="Admin navigation">
+
+        <div class="admin-sidebar__brand">
+          <img src="../assets/images/logo.jpeg" alt="Hildernw Mining" />
+          <div class="admin-sidebar__brand-text">
+            <strong>Hildernw</strong>
+            <small>Admin</small>
+          </div>
+        </div>
+
+        <nav class="admin-sidebar__nav">
+
+          <p class="admin-sidebar__label">Overview</p>
+          <button type="button" class="admin-sidebar__link is-active" data-module="dashboard" title="Dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <span class="admin-sidebar__link-text">Dashboard</span>
+          </button>
+
+          <p class="admin-sidebar__label">Submissions</p>
+          <button type="button" class="admin-sidebar__link" data-module="contact" title="Contact">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+            <span class="admin-sidebar__link-text">Contact</span>
+          </button>
+          <button type="button" class="admin-sidebar__link" data-module="vat-leach" title="Vat leach">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span class="admin-sidebar__link-text">Vat leach</span>
+          </button>
+          <button type="button" class="admin-sidebar__link" data-module="equipment" title="Equipment">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="6" width="15" height="10" rx="1"/><path d="M16 10h4l3 3v3h-7v-6z"/><circle cx="5.5" cy="18" r="2"/><circle cx="18.5" cy="18" r="2"/></svg>
+            <span class="admin-sidebar__link-text">Equipment</span>
+          </button>
+          <button type="button" class="admin-sidebar__link" data-module="mining-support" title="Mining support">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+            <span class="admin-sidebar__link-text">Mining support</span>
+          </button>
+          <button type="button" class="admin-sidebar__link" data-module="careers" title="Applications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="admin-sidebar__link-text">Applications</span>
+          </button>
+
+          <p class="admin-sidebar__label">Content</p>
+          <button type="button" class="admin-sidebar__link" data-module="vacancies" title="Vacancies">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+            <span class="admin-sidebar__link-text">Vacancies</span>
+          </button>
+
+        </nav>
+
+        <div class="admin-sidebar__footer">
+          <button type="button" class="admin-sidebar__link admin-sidebar__footer-btn" data-module="settings" title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            <span class="admin-sidebar__link-text">Settings</span>
+          </button>
+        </div>
+
+      </aside>
+
+      <div class="admin-overlay" id="admin-overlay" aria-hidden="true"></div>
+
+      <div class="admin-main">
+
+        <header class="admin-topbar">
+          <div class="admin-topbar__left">
+            <button type="button" class="admin-topbar__menu" id="admin-menu-btn" aria-label="Open menu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/></svg>
+            </button>
+            <button type="button" class="admin-topbar__collapse" id="admin-collapse-btn" aria-label="Collapse sidebar" aria-expanded="true">
+              <svg class="admin-topbar__collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6v12" stroke-linecap="round"/></svg>
+            </button>
+            <h1 class="admin-topbar__title" id="admin-page-title">Dashboard</h1>
+          </div>
+          <div class="admin-topbar__right">
+
+            <div class="admin-notify" id="admin-notify">
+              <button type="button" class="admin-topbar__icon-btn" id="admin-notify-btn" aria-label="Notifications" aria-expanded="false" aria-haspopup="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 106 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="admin-notify__badge" id="admin-notify-badge" hidden aria-hidden="true">0</span>
+              </button>
+              <div class="admin-notify__dropdown" id="admin-notify-dropdown" role="menu" hidden>
+                <div class="admin-notify__head"><strong>Notifications</strong></div>
+                <p class="admin-notify__empty">None</p>
+              </div>
+            </div>
+
+            <div class="admin-user" id="admin-user">
+              <button type="button" class="admin-topbar__user" id="admin-user-btn" aria-label="Account menu" aria-expanded="false" aria-haspopup="true">
+                <span class="admin-topbar__avatar" data-admin-avatar>A</span>
+                <span class="admin-topbar__user-name" id="admin-user-name">Admin</span>
+                <svg class="admin-topbar__caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              </button>
+              <div class="admin-user__dropdown" id="admin-user-dropdown" role="menu" hidden>
+                <div class="admin-user__head">
+                  <span class="admin-topbar__avatar admin-topbar__avatar--lg" data-admin-avatar>A</span>
+                  <div>
+                    <strong id="admin-user-display">Admin</strong>
+                    <span id="admin-user-email"></span>
+                  </div>
+                </div>
+                <div class="admin-user__menu">
+                  <button type="button" class="admin-user__item" data-module="profile" role="menuitem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Profile
+                  </button>
+                  <button type="button" class="admin-user__item" data-module="settings" role="menuitem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    Settings
+                  </button>
+                  <div class="admin-user__divider" role="separator"></div>
+                  <button type="button" class="admin-user__item admin-user__item--logout" id="admin-logout-btn" role="menuitem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Log out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-content">
+
+          <section class="admin-module is-active" data-module-panel="dashboard" aria-labelledby="mod-dashboard-title">
+            <h2 class="admin-module__title" id="mod-dashboard-title">Dashboard</h2>
+            <div class="admin-stats">
+              <div class="admin-stat"><p class="admin-stat__label">Contact</p><p class="admin-stat__value">—</p></div>
+              <div class="admin-stat"><p class="admin-stat__label">Rentals</p><p class="admin-stat__value">—</p></div>
+              <div class="admin-stat"><p class="admin-stat__label">Applications</p><p class="admin-stat__value">—</p></div>
+              <div class="admin-stat"><p class="admin-stat__label">Vacancies</p><p class="admin-stat__value">—</p></div>
+            </div>
+            <div class="admin-empty" aria-hidden="true"></div>
+          </section>
+
+          <section class="admin-module" data-module-panel="contact" aria-labelledby="mod-contact-title">
+            <h2 class="admin-module__title" id="mod-contact-title">Contact</h2>
+            <div class="admin-empty"></div>
+          </section>
+
+          <section class="admin-module" data-module-panel="vat-leach" aria-labelledby="mod-vat-title">
+            <h2 class="admin-module__title" id="mod-vat-title">Vat leach</h2>
+            <div class="admin-empty"></div>
+          </section>
+
+          <section class="admin-module" data-module-panel="equipment" aria-labelledby="mod-equipment-title">
+            <h2 class="admin-module__title" id="mod-equipment-title">Equipment</h2>
+            <div class="admin-empty"></div>
+          </section>
+
+          <section class="admin-module" data-module-panel="mining-support" aria-labelledby="mod-mining-title">
+            <h2 class="admin-module__title" id="mod-mining-title">Mining support</h2>
+            <div class="admin-empty"></div>
+          </section>
+
+          <section class="admin-module" data-module-panel="careers" aria-labelledby="mod-careers-title">
+            <h2 class="admin-module__title" id="mod-careers-title">Applications</h2>
+            <div class="admin-empty"></div>
+          </section>
+
+          <section class="admin-module" data-module-panel="vacancies" aria-labelledby="mod-vacancies-title">
+            <h2 class="admin-module__title" id="mod-vacancies-title">Vacancies</h2>
+            <div class="admin-empty"></div>
+          </section>
+
+          <section class="admin-module" data-module-panel="profile" aria-labelledby="mod-profile-title">
+            <h2 class="admin-module__title" id="mod-profile-title">Profile</h2>
+            <div class="admin-empty"></div>
+          </section>
+
+          <section class="admin-module" data-module-panel="settings" aria-labelledby="mod-settings-title">
+            <h2 class="admin-module__title" id="mod-settings-title">Settings</h2>
+            <div class="admin-empty"></div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script src="js/admin.js" defer></script>
+  </body>
+</html>
