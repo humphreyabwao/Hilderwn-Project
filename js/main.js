@@ -213,6 +213,13 @@
   }
 
 
+  /* ── COPYRIGHT YEAR (auto) ─────────────────── */
+  var year = String(new Date().getFullYear());
+  document.querySelectorAll('[data-copyright-year]').forEach(function (el) {
+    el.textContent = year;
+  });
+
+
   /* ── FLOATING SCROLL TOP BUTTON ───────────── */
   var scrollTopBtn = document.querySelector('[data-scroll-top]');
 
