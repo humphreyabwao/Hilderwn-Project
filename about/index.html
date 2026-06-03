@@ -236,42 +236,130 @@
         </div>
       </section>
 
-      <!-- OUR PLANT — image gallery -->
-      <section class="abt-plant" id="plant">
-        <div class="abt-plant__bg" style="background-image:url('../assets/images/DSC_0899.jpg.jpeg')"></div>
-        <div class="abt-plant__dim"></div>
+      <!-- OUR GALLERY -->
+      <section class="abt-gallery" id="gallery">
+        <div class="abt-gallery__bg" data-bg="../assets/images/DSC_0899.jpg.jpeg"></div>
+        <div class="abt-gallery__dim"></div>
+        <div class="abt-gallery__glow" aria-hidden="true"></div>
 
-        <div class="abt-plant__head reveal">
-          <p class="abt-plant__tag">Our Plant</p>
-          <h2 class="abt-plant__title">See our operations</h2>
-          <p class="abt-plant__intro">A look inside our mining sites, processing plants, and fleet operations.</p>
+        <div class="abt-gallery__head reveal">
+          <p class="abt-gallery__tag">Gallery</p>
+          <h2 class="abt-gallery__title">Our Gallery</h2>
+          <p class="abt-gallery__intro">Sites, plants, labs, and fleet — captured on the ground across Hildernw operations.</p>
         </div>
 
-        <div class="abt-plant__gallery">
-          <div class="abt-plant__img reveal" style="--delay:.1s">
-            <img src="../assets/images/DSC_0860.jpg.jpeg" alt="Water washing at the processing site" loading="lazy" />
-            <div class="abt-plant__caption">Water washing and slurry processing at the main site</div>
-          </div>
-          <div class="abt-plant__img abt-plant__img--tall reveal" style="--delay:.15s">
-            <img src="../assets/images/DSC_0872.jpg.jpeg" alt="Vat leach tanks" loading="lazy" />
-            <div class="abt-plant__caption">Large-capacity vat leach tanks for gold recovery processing</div>
-          </div>
-          <div class="abt-plant__img reveal" style="--delay:.2s">
-            <img src="../assets/images/DSC_0883.jpg.jpeg" alt="On-site chemistry lab" loading="lazy" />
-            <div class="abt-plant__caption">On-site chemistry lab for sample testing and quality control</div>
-          </div>
-          <div class="abt-plant__img reveal" style="--delay:.25s">
-            <img src="../assets/images/DSC_0891.jpg.jpeg" alt="Lab technician at work" loading="lazy" />
-            <div class="abt-plant__caption">Lab technician conducting chemical analysis and assay testing</div>
-          </div>
-          <div class="abt-plant__img abt-plant__img--wide reveal" style="--delay:.3s">
-            <img src="../assets/images/DSC_0903.jpg.jpeg" alt="Processing plant interior" loading="lazy" />
-            <div class="abt-plant__caption">Interior of the processing plant with smelting tank and electrical systems</div>
-          </div>
-          <div class="abt-plant__img reveal" style="--delay:.35s">
-            <img src="../assets/images/DSC_0932.jpg.jpeg" alt="Industrial water pump" loading="lazy" />
-            <div class="abt-plant__caption">High-capacity industrial pump for water circulation and site drainage</div>
-          </div>
+        <div class="abt-gallery__mosaic">
+          <figure class="abt-gallery__tile abt-gallery__tile--landscape-xl reveal" style="--delay:.05s">
+            <span class="abt-gallery__index" aria-hidden="true">01</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/hero-section.png" alt="Hildernw mining operations overview" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Operations overview</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--portrait reveal" style="--delay:.1s">
+            <span class="abt-gallery__index" aria-hidden="true">02</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/vat-leach.png" alt="Vat leach processing" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Vat leach processing</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--portrait-tall reveal" style="--delay:.12s">
+            <span class="abt-gallery__index" aria-hidden="true">03</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0872.jpg.jpeg" alt="Vat leach tanks" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Gold recovery tanks</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--landscape reveal" style="--delay:.15s">
+            <span class="abt-gallery__index" aria-hidden="true">04</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0860.jpg.jpeg" alt="Water washing at processing site" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Slurry processing</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--portrait reveal" style="--delay:.18s">
+            <span class="abt-gallery__index" aria-hidden="true">05</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0883.jpg.jpeg" alt="On-site chemistry lab" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Chemistry lab</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--portrait reveal" style="--delay:.2s">
+            <span class="abt-gallery__index" aria-hidden="true">06</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0891.jpg.jpeg" alt="Lab technician at work" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Assay testing</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--landscape-wide reveal" style="--delay:.22s">
+            <span class="abt-gallery__index" aria-hidden="true">07</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0903.jpg.jpeg" alt="Processing plant interior" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Plant interior &amp; electrical systems</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--landscape reveal" style="--delay:.25s">
+            <span class="abt-gallery__index" aria-hidden="true">08</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0930.jpg.jpeg" alt="Heavy equipment and fleet" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Fleet &amp; equipment</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--portrait reveal" style="--delay:.28s">
+            <span class="abt-gallery__index" aria-hidden="true">09</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0887.jpg.jpeg" alt="Mining support on site" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Mining support</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--landscape reveal" style="--delay:.3s">
+            <span class="abt-gallery__index" aria-hidden="true">10</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0932.jpg.jpeg" alt="Industrial water pump" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Site drainage pumps</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--landscape reveal" style="--delay:.32s">
+            <span class="abt-gallery__index" aria-hidden="true">11</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0911.jpg.jpeg" alt="Sustainable operations" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Sustainable operations</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--landscape-wide reveal" style="--delay:.35s">
+            <span class="abt-gallery__index" aria-hidden="true">12</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0908.jpg.jpeg" alt="Mining site panorama" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Site panorama</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--portrait reveal" style="--delay:.38s">
+            <span class="abt-gallery__index" aria-hidden="true">13</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0876.jpg.jpeg" alt="Processing and site works" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Processing works</figcaption>
+          </figure>
+
+          <figure class="abt-gallery__tile abt-gallery__tile--landscape reveal" style="--delay:.4s">
+            <span class="abt-gallery__index" aria-hidden="true">14</span>
+            <div class="abt-gallery__frame">
+              <img src="../assets/images/DSC_0934.jpg.jpeg" alt="Mining support services" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="abt-gallery__caption">Support services</figcaption>
+          </figure>
         </div>
       </section>
 
