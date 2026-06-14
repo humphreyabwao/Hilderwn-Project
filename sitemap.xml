@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://hildernwmining.co.ke/</loc><priority>1.0</priority></url>
-  <url><loc>https://hildernwmining.co.ke/about</loc><priority>0.8</priority></url>
-  <url><loc>https://hildernwmining.co.ke/services</loc><priority>0.8</priority></url>
-  <url><loc>https://hildernwmining.co.ke/services/vat-leach</loc><priority>0.7</priority></url>
-  <url><loc>https://hildernwmining.co.ke/services/equipment-rental</loc><priority>0.7</priority></url>
-  <url><loc>https://hildernwmining.co.ke/services/mining-support</loc><priority>0.7</priority></url>
-  <url><loc>https://hildernwmining.co.ke/sustainability</loc><priority>0.7</priority></url>
-  <url><loc>https://hildernwmining.co.ke/careers</loc><priority>0.6</priority></url>
+  <url><loc>https://hildernwmining.co.ke/about/</loc><priority>0.8</priority></url>
+  <url><loc>https://hildernwmining.co.ke/services/</loc><priority>0.8</priority></url>
+  <url><loc>https://hildernwmining.co.ke/services/vat-leach/</loc><priority>0.7</priority></url>
+  <url><loc>https://hildernwmining.co.ke/services/equipment-rental/</loc><priority>0.7</priority></url>
+  <url><loc>https://hildernwmining.co.ke/services/mining-support/</loc><priority>0.7</priority></url>
+  <url><loc>https://hildernwmining.co.ke/sustainability/</loc><priority>0.7</priority></url>
+  <url><loc>https://hildernwmining.co.ke/careers/</loc><priority>0.6</priority></url>
 </urlset>
